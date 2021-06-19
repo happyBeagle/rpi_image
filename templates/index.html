@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.result {
+  font-size: 40px;
+  position: relative;
+  height: auto;
+  color: palevioletred;
+  padding: 20px;
+  font-weight: 700;
+}
+
+.navbar {
+  overflow: hidden;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  margin: auto;
+  background-color: black;
+  opacity:0.6;
+}
+
+.navbar a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px; 
+}
+
+.navbar a.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.main {
+  padding: 16px;
+  margin-bottom: 30px;
+}
+
+
+.camera-movement{ 
+  float: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.lights-button{
+	float: right;
+}
+
+i.fa {
+  display: inline-block;
+  border-radius: 60px;
+  box-shadow: 0px 0px 2px #888;
+  padding: 0.5em 0.6em;
+  
+
+}
+
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 35%
+}
+
+button {
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+}
+	
+.camera-bg {
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+
+  /* Preserve aspet ratio */
+  min-width: 100%;
+  min-height: 100%;
+
+    /* Full height */
+  height: 100%;
+
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+}
+
+.top-right-logo {
+  position: absolute;
+  top: 3%;
+  left: 2%;
+  font-size: 38px;
+  color: white;
+  opacity: 0.5;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: black;
+}
+
+
+</style>
+</head>
+
+<title>Trash Classification</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<body>
+
+<div class="main" id="newpost">
+  <img  class="camera-bg" style="width: 80%; height:50%; background-attachment: fixed;" id="bg" class="center" src="{{ url_for('video_feed') }}">
+     
+</div>
+
+<div id="result" class="result", style="display: none;">
+  <table>
+    <tr><th>GTSNet</th><tr>
+    <tr>
+      <td>Result</td>
+      <td id="label"></td>
+    </tr>
+    <tr>
+      <td>inference Time</td>
+      <td id="time"></td>
+    </tr>
+  </table>
+</div>
+
+
+
+<div class="navbar">
+  <div class="ignoreCall">
+    <a id=decline class="but_def" style="margin: auto 45%">
+      <table>
+        <tr>
+          <td>
+            <button id="start_button"> 
+              <i id="button_1_img" style="background: blue; color: white;" class="fa fa-play fa-2x" aria-hidden="true"></i>
+            </button>
+          </td>
+          <td>
+            <button id="end_button"> 
+              <i id="button_2_img" style="background: red; color: white;" class="fa fa-stop fa-2x" aria-hidden="true"></i>
+            </button>
+          </td>
+        </tr>
+      </table>
+    </a>
+  </div>
+</div>
+
+
+    
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+  
+  var timerID;
+  $(document).ready(function () {
+    $('#start_button').on('click',function(e){
+        e.preventDefault();
+        $('#result').css('display', 'block');
+        updateData();
+    });
+    $('#end_button').on('click',function(e){
+        e.preventDefault();
+        clearTimeout(timerID); // 타이머 중지
+        $('#result').css('display', 'none');
+    });   
+});
+
+function updateData(){
+    $.ajax({
+      url: "http://127.0.0.1:5000/answer",
+      type:"get",
+      cache : false,
+      success: function(data){ // getserver.php 파일에서 echo 결과값이 data 임
+        console.log(data)
+       $('#label').text(data["label"]);
+       $("#time").text(data["time"]);
+      }
+    });
+    timerID = setTimeout("updateData()", 2000); // 2초 단위로 갱신 처리
+}
+
+</script>
+
+</body>
+</html>
+
